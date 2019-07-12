@@ -5,10 +5,12 @@
 
 import groovy.sql.Sql
 
+import java.time.LocalDateTime
+
 Class.forName('org.postgresql.Driver')
 
 def sql = Sql.newInstance('jdbc:postgresql://localhost/postgres', 'postgres', 'postgres')
-//def rows = sql.rows([param: 'Param_Value'], 'select * from testme(param => :param)')
+def rows = sql.rows([param: 'Param_Value'], 'select * from testme(param => :param)')
 //println rows
 
 // If you want customize debug level:
@@ -17,16 +19,19 @@ println "Set client_min_messages to debug"
 
 final String paramValue = "Param value"
 
-sql.query("select * from testme(param => '${paramValue}')") { resultSet ->
+sql.query("select * from testme(param => :paramValue)", [paramValue: paramValue]) { resultSet ->
+    def rsRows = [:]
     while (resultSet.next()) {
-        def r = resultSet.getString(1)
-        println "r = $r"
+        rsRows << resultSet.toRowResult()
+        //def r = resultSet.getString(1)
+        //println "r = $r"
     }
     def warning = resultSet.getStatement().getWarnings()
     while (warning) {
-        println warning
+        println "[${LocalDateTime.now()}] [${warning.getSQLState()}] ${warning.message}"
         warning = warning.nextWarning
     }
+    println rsRows
 }
 /*
 
