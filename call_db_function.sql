@@ -1,1 +1,2 @@
+set client_min_messages = debug;
 select * from testme(param => 'Hello');
