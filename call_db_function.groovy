@@ -19,12 +19,10 @@ println "Set client_min_messages to debug"
 
 final String paramValue = "Param value"
 
-sql.query("select * from testme(param => :paramValue)", [paramValue: paramValue]) { resultSet ->
+sql.query("select * from testme(param => :paramValue, raise_error => :raise_error)", [paramValue: paramValue, raise_error: true]) { resultSet ->
     def rsRows = [:]
     while (resultSet.next()) {
         rsRows << resultSet.toRowResult()
-        //def r = resultSet.getString(1)
-        //println "r = $r"
     }
     def warning = resultSet.getStatement().getWarnings()
     while (warning) {
